@@ -8,7 +8,6 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v8.renderscript.Allocation;
@@ -16,13 +15,9 @@ import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 /**
  * Created by ammu on 24-09-2016.
@@ -52,6 +47,7 @@ public class BlackWhiteImageView extends ImageView {
         getAttributes(context, attrs, defStyleAttr);
         setBlacknWhite();
         setListener();
+        setBlurListener();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -61,7 +57,17 @@ public class BlackWhiteImageView extends ImageView {
         getAttributes(context, attrs, defStyleAttr);
         setBlacknWhite();
         setListener();
+        setBlurListener();
 
+    }
+
+    private void setBlurListener() {
+        if (mIsBlur) {
+            bitmap = blurRenderScript(((BitmapDrawable) getDrawable()).getBitmap(), 24);
+        } else {
+            bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
+        }
+        setImageBitmap(bitmap);
     }
 
     public void getAttributes(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -80,10 +86,26 @@ public class BlackWhiteImageView extends ImageView {
 
     public void setBlacknWhite() {
         if (mChangeToBlacknWhite) {
-            initColorFilter();
+            mSetColorFilter();
         } else {
-            init();
+            mSetBWColorFilter();
         }
+    }
+
+    public void mSetColorFilter() {
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        setColorFilter(filter);
+    }
+
+    public void mSetBWColorFilter() {
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(1);
+
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        setColorFilter(filter);
     }
 
     OnTouchListener onTouchListener = new OnTouchListener() {
@@ -92,12 +114,12 @@ public class BlackWhiteImageView extends ImageView {
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    init();
+                    mSetBWColorFilter();
                     invalidate();
                     break;
 
                 case MotionEvent.ACTION_UP:
-                    initColorFilter();
+                    mSetColorFilter();
                     invalidate();
                     break;
             }
@@ -106,57 +128,20 @@ public class BlackWhiteImageView extends ImageView {
         }
     };
 
-    private void init() {
-        m_paint = new Paint();
-    }
-
-    private void initColorFilter() {
-        ColorMatrix cm = new ColorMatrix();
-        cm.setSaturation(0);
-        m_paint = new Paint();
-        m_paint.setColorFilter(new ColorMatrixColorFilter(cm));
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-
-        Drawable d = getDrawable();
-        if (d != null) {
-            if (mIsBlur) {
-                bitmap = blurRenderScript(((BitmapDrawable) getDrawable()).getBitmap(), 24);
-
-            } else {
-                bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
-
-            }
-
-            bitmap = Bitmap.createScaledBitmap(bitmap,  canvas.getWidth(),canvas.getHeight(),true);
-            canvas.drawBitmap(bitmap, 0.0f, 0.0f, m_paint);
-
-        } else {
-            super.onDraw(canvas);
-        }
-
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     private Bitmap RGB565toARGB888(Bitmap img) throws Exception {
+
         int numPixels = img.getWidth() * img.getHeight();
         int[] pixels = new int[numPixels];
-
-        //Get JPEG pixels.  Each int is the color values for one pixel.
         img.getPixels(pixels, 0, img.getWidth(), 0, 0, img.getWidth(), img.getHeight());
-
-        //Create a Bitmap of the appropriate format.
         Bitmap result = Bitmap.createBitmap(img.getWidth(), img.getHeight(), Bitmap.Config.ARGB_8888);
-
-        //Set RGB pixels.
         result.setPixels(pixels, 0, result.getWidth(), 0, 0, result.getWidth(), result.getHeight());
         return result;
+
     }
 
     private Bitmap blurRenderScript(Bitmap smallBitmap, int radius) {

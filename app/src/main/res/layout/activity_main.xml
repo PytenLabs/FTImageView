@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:changeToBlacknWhite="true"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         app:changeTouchColor="true"
         android:src="@drawable/defaultimg" />
 
