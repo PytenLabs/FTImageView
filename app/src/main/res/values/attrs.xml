@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <declare-styleable name="BlackWhiteImageView">
+    <declare-styleable name="TestImageView">
         <attr name="changeTouchColor" format="boolean" />
         <attr name="changeToBlacknWhite" format="boolean" />
         <attr name="isBlur" format="boolean" />
     </declare-styleable>
-
 </resources>

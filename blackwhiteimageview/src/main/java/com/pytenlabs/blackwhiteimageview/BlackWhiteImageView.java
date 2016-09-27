@@ -16,9 +16,13 @@ import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Created by ammu on 24-09-2016.
@@ -31,6 +35,8 @@ public class BlackWhiteImageView extends ImageView {
     Boolean mChangeTouchColor = false;
     Boolean mChangeToBlacknWhite = false;
     Boolean mIsBlur = false;
+
+    Canvas mCanvas;
 
     public BlackWhiteImageView(Context context) {
         super(context);
@@ -113,23 +119,29 @@ public class BlackWhiteImageView extends ImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+
         Drawable d = getDrawable();
         if (d != null) {
             if (mIsBlur) {
                 bitmap = blurRenderScript(((BitmapDrawable) getDrawable()).getBitmap(), 24);
+
             } else {
                 bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
+
             }
+
+            bitmap = Bitmap.createScaledBitmap(bitmap,  canvas.getWidth(),canvas.getHeight(),true);
             canvas.drawBitmap(bitmap, 0.0f, 0.0f, m_paint);
+
         } else {
             super.onDraw(canvas);
         }
+
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     private Bitmap RGB565toARGB888(Bitmap img) throws Exception {
