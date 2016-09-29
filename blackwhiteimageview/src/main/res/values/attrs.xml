@@ -11,6 +11,7 @@
         </attr>
         <attr name="transform" format="string">
             <enum name="circle" value="0"/>
+            <enum name="square" value="1"/>
         </attr>
     </declare-styleable>
 

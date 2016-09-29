@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
@@ -68,6 +69,8 @@ public class BlackWhiteImageView extends ImageView {
     private void setTransform() {
         if (mTransform.equals("0")){
             createCircularImageBitmap();
+        } else if (mTransform.equals("1")){
+            createSquaredBitmap();
         }
     }
 
@@ -138,6 +141,11 @@ public class BlackWhiteImageView extends ImageView {
     };
 
     @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
@@ -146,6 +154,15 @@ public class BlackWhiteImageView extends ImageView {
         RoundedBitmapDrawable roundDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
         roundDrawable.setCircular(true);
         setImageDrawable(roundDrawable);
+    }
+
+    private void createSquaredBitmap() {
+        int deviceDim = Math.min(getContext().getResources().getDisplayMetrics().widthPixels, getContext().getResources().getDisplayMetrics().heightPixels);
+        int imageDim = Math.min(bitmap.getWidth(), bitmap.getHeight());
+        int dim = Math.min(deviceDim, imageDim);
+        Bitmap bm = Bitmap.createScaledBitmap(bitmap, dim, dim, false);
+        this.setScaleType(ScaleType.FIT_CENTER);
+        setImageBitmap(bm);
     }
 
     private Bitmap RGB565toARGB888(Bitmap img) throws Exception {
