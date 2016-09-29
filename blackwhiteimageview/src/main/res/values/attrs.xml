@@ -4,7 +4,14 @@
     <declare-styleable name="BlackWhiteImageView">
         <attr name="changeTouchColor" format="boolean" />
         <attr name="changeToBlacknWhite" format="boolean" />
-        <attr name="isBlur" format="boolean" />
+        <attr name="isBlur" format="boolean"/>
+        <attr name="filter" format="string" localization = "suggested">
+            <enum name="bw" value="0"/>
+            <enum name="blur" value="1"/>
+        </attr>
+        <attr name="transform" format="string">
+            <enum name="circle" value="0"/>
+        </attr>
     </declare-styleable>
 
 </resources>
