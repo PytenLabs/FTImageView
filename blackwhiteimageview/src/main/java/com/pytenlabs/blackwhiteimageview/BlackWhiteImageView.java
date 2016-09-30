@@ -33,7 +33,8 @@ public class BlackWhiteImageView extends ImageView {
     Boolean mChangeTouchColor = false;
     Boolean mChangeToBlacknWhite = false;
     Boolean mIsBlur = false;
-    String mFilter = null, mTransform = null;
+    int mFilter = 0;
+    String mTransform = null;
     String BW = "bw", BLUR = "blur";
 
     Canvas mCanvas;
@@ -67,18 +68,22 @@ public class BlackWhiteImageView extends ImageView {
     }
 
     private void setTransform() {
-        if (mTransform.equals("0")){
+        if (mTransform.equals("0")) {
             createCircularImageBitmap();
-        } else if (mTransform.equals("1")){
+        } else if (mTransform.equals("1")) {
             createSquaredBitmap();
         }
     }
 
     private void setFilter() {
-        if (mFilter.equals("0")){
+        if (mFilter == 1) {
             mSetBWColorFilter();
-        } else if (mFilter.equals("1")){
+        } else if (mFilter == 2) {
             mSetColorFilter();
+            bitmap = blurRenderScript(((BitmapDrawable) getDrawable()).getBitmap(), 24);
+            setImageBitmap(bitmap);
+        } else if (mFilter == (1 | 2)) {
+            mSetBWColorFilter();
             bitmap = blurRenderScript(((BitmapDrawable) getDrawable()).getBitmap(), 24);
             setImageBitmap(bitmap);
         } else {
@@ -92,7 +97,7 @@ public class BlackWhiteImageView extends ImageView {
         mChangeTouchColor = a.getBoolean(R.styleable.BlackWhiteImageView_changeTouchColor, false);
         mChangeToBlacknWhite = a.getBoolean(R.styleable.BlackWhiteImageView_changeToBlacknWhite, false);
         mIsBlur = a.getBoolean(R.styleable.BlackWhiteImageView_isBlur, false);
-        mFilter = a.getString(R.styleable.BlackWhiteImageView_filter);
+        mFilter = a.getInt(R.styleable.BlackWhiteImageView_filter, 0);
         mTransform = a.getString(R.styleable.BlackWhiteImageView_transform);
         a.recycle();
     }
@@ -150,7 +155,7 @@ public class BlackWhiteImageView extends ImageView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    public void createCircularImageBitmap(){
+    public void createCircularImageBitmap() {
         RoundedBitmapDrawable roundDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
         roundDrawable.setCircular(true);
         setImageDrawable(roundDrawable);

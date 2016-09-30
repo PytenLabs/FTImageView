@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
-    android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     tools:context="com.pytenlabs.myapplication.MainActivity">
 
     <com.pytenlabs.blackwhiteimageview.BlackWhiteImageView
@@ -13,8 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        app:filter="blur"
-        app:transform="square"
-        android:src="@drawable/defaultimg" />
+        android:src="@drawable/defaultimg"
+        app:filter="bw|blur"
+        app:transform="square" />
 
 </RelativeLayout>
